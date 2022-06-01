@@ -152,11 +152,11 @@ def extract_roles(
         srl = tqdm(srl)
 
     for i, sentence_dict in enumerate(srl):
-        role_per_sentence = extract_role_per_sentence(sentence_dict, used_roles)
+        role_per_sentence, span = extract_role_per_sentence(sentence_dict, used_roles)
         sentence_index.extend([i] * len(role_per_sentence))
         statements_role_list.extend(role_per_sentence)
 
-    return statements_role_list, np.asarray(sentence_index, dtype=np.uint32)
+    return statements_role_list, span, np.asarray(sentence_index, dtype=np.uint32)
 
 
 def extract_role_per_sentence(
@@ -190,11 +190,9 @@ def extract_role_per_sentence(
                     tok for i, tok in enumerate(word_list) if i in indices_role
                 ]
                 statement_role_dict[role] = " ".join(toks_role)
-            try:
-                first_appearance = min(first_appearance, min([i for i, tok in enumerate(word_list) if i in indices_role]))
-                last_appearance = max(last_appearance, max([i for i, tok in enumerate(word_list) if i in indices_role]) + 1)
-            except ValueError:
-                pass
+             first_appearance = min(first_appearance, min([i for i, tok in enumerate(word_list) if i in indices_role]))
+             last_appearance = max(last_appearance, max([i for i, tok in enumerate(word_list) if i in indices_role]) + 1)
+            
 
         if "B-ARGM-NEG" in used_roles:
             role_negation_value = any("B-ARGM-NEG" in tag for tag in tag_list)
@@ -207,12 +205,11 @@ def extract_role_per_sentence(
         for key in key_to_delete:
             del statement_role_dict[key]
         sentence_role_list.append(statement_role_dict)
-        sentence_role_list.append((first_appearance, last_appearance))
 
     if not sentence_role_list:
         sentence_role_list = [{}]
 
-    return sentence_role_list
+    return sentence_role_list, (first_appearance, last_appearance)
 
 
 def process_roles(
