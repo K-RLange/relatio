@@ -192,9 +192,11 @@ def extract_role_per_sentence(
                     tok for i, tok in enumerate(word_list) if i in indices_role
                 ]
                 statement_role_dict[role] = " ".join(toks_role)
-                first_appearance = min(first_appearance, min([i for i, tok in enumerate(word_list) if i in indices_role]))
-                last_appearance = max(last_appearance, max([i for i, tok in enumerate(word_list) if i in indices_role]) + 1)
-            
+                try:
+                    first_appearance = min(first_appearance, min([i for i, tok in enumerate(word_list) if i in indices_role]))
+                    last_appearance = max(last_appearance, max([i for i, tok in enumerate(word_list) if i in indices_role]) + 1)
+                except:
+                    pass            
 
         if "B-ARGM-NEG" in used_roles:
             role_negation_value = any("B-ARGM-NEG" in tag for tag in tag_list)
