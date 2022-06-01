@@ -216,7 +216,7 @@ def build_narrative_model(
     }
 
     # Process SRL
-    roles, sentence_index = extract_roles(
+    roles, spans, sentence_index = extract_roles(
         srl_res, used_roles=roles_considered, progress_bar=progress_bar
     )
 
@@ -434,7 +434,7 @@ def get_narratives(
         )
 
     # Process SRL
-    roles, sentence_index = extract_roles(
+    roles, spans, sentence_index = extract_roles(
         srl_res,
         used_roles=narrative_model["roles_considered"],
         progress_bar=progress_bar,
@@ -541,6 +541,8 @@ def get_narratives(
     ]
     colnames = [col for col in colnames_ordered if col in list(final_statements)]
     final_statements = final_statements[colnames]
+    final_statements["start"] = [x[0] for x in spans]
+    final_statements["end"] = [x[1] for x in spans]
 
     if output_path is not None:
         final_statements.to_csv(output_path, index=False)
