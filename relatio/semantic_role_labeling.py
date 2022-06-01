@@ -150,13 +150,14 @@ def extract_roles(
         print("Processing SRL...")
         time.sleep(1)
         srl = tqdm(srl)
-
+    spans = []
     for i, sentence_dict in enumerate(srl):
         role_per_sentence, span = extract_role_per_sentence(sentence_dict, used_roles)
+        spans.append(span)
         sentence_index.extend([i] * len(role_per_sentence))
         statements_role_list.extend(role_per_sentence)
 
-    return statements_role_list, span, np.asarray(sentence_index, dtype=np.uint32)
+    return statements_role_list, spans, np.asarray(sentence_index, dtype=np.uint32)
 
 
 def extract_role_per_sentence(
