@@ -179,11 +179,11 @@ def extract_role_per_sentence(
 
     word_list = sentence_dict["words"]
     sentence_role_list = []
+    first_appearance = 10000
+    last_appearance = 0
 
     for statement_dict in sentence_dict["verbs"]:
         tag_list = statement_dict["tags"]
-        first_appearance = 10000
-        last_appearance = 0
         statement_role_dict: Dict[str, Union[str, bool]] = {}
         for role in ["ARG0", "ARG1", "ARG2", "B-V", "B-ARGM-MOD"]:
             if role in used_roles:
