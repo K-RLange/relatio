@@ -179,8 +179,7 @@ def extract_role_per_sentence(
 
     word_list = sentence_dict["words"]
     sentence_role_list = []
-    first_appearance = 10000
-    last_appearance = 0
+    span_dict = {}
 
     for statement_dict in sentence_dict["verbs"]:
         tag_list = statement_dict["tags"]
@@ -188,17 +187,12 @@ def extract_role_per_sentence(
         for role in ["ARG0", "ARG1", "ARG2", "B-V", "B-ARGM-MOD"]:
             if role in used_roles:
                 indices_role = [i for i, tok in enumerate(tag_list) if role in tok]
+                span_dict[role] = (min(indices_role), max(indices_role))
                 toks_role = [
                     tok for i, tok in enumerate(word_list) if i in indices_role
                 ]
                 statement_role_dict[role] = " ".join(toks_role)
-                try:
-                    first_appearance = min(first_appearance, min(indices_role))
-                    last_appearance = max(last_appearance, max(indices_role))
-                    print(indices_role)
-                except:
-                    pass            
-
+                
         if "B-ARGM-NEG" in used_roles:
             role_negation_value = any("B-ARGM-NEG" in tag for tag in tag_list)
             statement_role_dict["B-ARGM-NEG"] = role_negation_value
@@ -209,12 +203,13 @@ def extract_role_per_sentence(
                 key_to_delete.append(key)
         for key in key_to_delete:
             del statement_role_dict[key]
+            del span_dict[key]
         sentence_role_list.append(statement_role_dict)
 
     if not sentence_role_list:
         sentence_role_list = [{}]
 
-    return sentence_role_list, (first_appearance, last_appearance)
+    return sentence_role_list, span_dict
 
 
 def process_roles(
