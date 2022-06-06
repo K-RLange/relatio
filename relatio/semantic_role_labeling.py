@@ -179,11 +179,12 @@ def extract_role_per_sentence(
 
     word_list = sentence_dict["words"]
     sentence_role_list = []
-    span_dict = {}
+    span_list = []
 
     for statement_dict in sentence_dict["verbs"]:
         tag_list = statement_dict["tags"]
         statement_role_dict: Dict[str, Union[str, bool]] = {}
+        span_dict = {}
         for role in ["ARG0", "ARG1", "ARG2", "B-V", "B-ARGM-MOD"]:
             if role in used_roles:
                 indices_role = [i for i, tok in enumerate(tag_list) if role in tok]
@@ -205,6 +206,7 @@ def extract_role_per_sentence(
             del statement_role_dict[key]
             del span_dict[key]
         sentence_role_list.append(statement_role_dict)
+        sentence_role_list.append(span_dict)
 
     if not sentence_role_list:
         sentence_role_list = [{}]
