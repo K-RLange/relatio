@@ -188,7 +188,8 @@ def extract_role_per_sentence(
         for role in ["ARG0", "ARG1", "ARG2", "B-V", "B-ARGM-MOD"]:
             if role in used_roles:
                 indices_role = [i for i, tok in enumerate(tag_list) if role in tok]
-                span_dict[role] = (min(indices_role), max(indices_role))
+                if len(indices_role) > 0:
+                    span_dict[role] = (min(indices_role), max(indices_role))
                 toks_role = [
                     tok for i, tok in enumerate(word_list) if i in indices_role
                 ]
