@@ -212,7 +212,7 @@ def extract_role_per_sentence(
     if not sentence_role_list:
         sentence_role_list = [{}]
 
-    return sentence_role_list, span_dict
+    return sentence_role_list, span_list
 
 
 def process_roles(
