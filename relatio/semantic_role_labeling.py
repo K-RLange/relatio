@@ -156,6 +156,7 @@ def extract_roles(
         spans.append(span)
         sentence_index.extend([i] * len(role_per_sentence))
         statements_role_list.extend(role_per_sentence)
+    print("finished")
 
     return statements_role_list, spans, np.asarray(sentence_index, dtype=np.uint32)
 
