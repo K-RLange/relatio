@@ -195,7 +195,7 @@ def extract_role_per_sentence(
                 try:
                     first_appearance = min(first_appearance, min(indices_role))
                     last_appearance = max(last_appearance, max(indices_role + 1))
-                    print(indices_role)
+                    print("indices_role")
                 except:
                     pass            
 
