@@ -516,6 +516,7 @@ def get_narratives(
                         ][l][n_clusters[l]][cluster]
 
     # Original sentence and document
+    print("test")
     for i, index in enumerate(sentence_index):
         final_statements[i]["sentence"] = index
         final_statements[i]["doc"] = doc_index[index]
