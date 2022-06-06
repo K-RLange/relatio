@@ -194,8 +194,9 @@ def extract_role_per_sentence(
                 ]
                 statement_role_dict[role] = " ".join(toks_role)
                 try:
-                    first_appearance = min(first_appearance, min([i for i, tok in enumerate(word_list) if i in indices_role]))
-                    last_appearance = max(last_appearance, max([i for i, tok in enumerate(word_list) if i in indices_role]) + 1)
+                    first_appearance = min(first_appearance, min(indices_role))
+                    last_appearance = max(last_appearance, max(indices_role + 1)
+                    print(indices_role)
                 except:
                     pass            
 
