@@ -542,7 +542,7 @@ def get_narratives(
     ]
     colnames = [col for col in colnames_ordered if col in list(final_statements)]
     final_statements = final_statements[colnames]
-    return final_statements, spans
+    spans = extend_inside(list(map(lambda x: x if len(x) > 0 else [[]],spans)))
     final_statements["start"] = [x[0] for x in spans]
     final_statements["end"] = [x[1] for x in spans]
 
