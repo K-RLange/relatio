@@ -207,6 +207,7 @@ def extract_role_per_sentence(
                 key_to_delete.append(key)
         for key in key_to_delete:
             del statement_role_dict[key]
+            del span_dict[key]
         sentence_role_list.append(statement_role_dict)
         span.append((min([x[0] for x in span_dict.values()]), max([x[1] for x in span_dict.values()])))
 
