@@ -548,7 +548,7 @@ def get_narratives(
             for part_of_element in element:
                 new_list.append(part_of_element)
         return new_list
-    spans = extend_inside(list(map(lambda x: x if len(x) > 0 else [(None, None)], spans)))
+    spans = extend_inside(list(map(lambda x: x if len(x) > 0 else [(-1, -1)], spans)))
     final_statements["start"] = [x[0] for x in spans]
     final_statements["end"] = [x[1] for x in spans]
 
