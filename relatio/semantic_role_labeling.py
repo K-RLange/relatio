@@ -181,7 +181,7 @@ def extract_role_per_sentence(
     sentence_role_list = []
     current_min = 1000
     current_max = 0
-    span_list = []
+    span = []
 
     for statement_dict in sentence_dict["verbs"]:
         tag_list = statement_dict["tags"]
@@ -208,9 +208,7 @@ def extract_role_per_sentence(
         for key in key_to_delete:
             del statement_role_dict[key]
         sentence_role_list.append(statement_role_dict)
-        span_list.append(span_dict)
-        
-    span = (min([x[0] for x in span_dict.values()]), max([x[1] for x in span_dict.values()]))
+        span.append((min([x[0] for x in span_dict.values()]), max([x[1] for x in span_dict.values()])))
 
     if not sentence_role_list:
         sentence_role_list = [{}]
