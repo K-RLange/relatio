@@ -179,6 +179,8 @@ def extract_role_per_sentence(
 
     word_list = sentence_dict["words"]
     sentence_role_list = []
+    current_min = 1000
+    current_max = 0
     span_list = []
 
     for statement_dict in sentence_dict["verbs"]:
@@ -207,11 +209,13 @@ def extract_role_per_sentence(
             del statement_role_dict[key]
         sentence_role_list.append(statement_role_dict)
         span_list.append(span_dict)
+        
+    span = (min([x[0] for x in span_dict.values()]), max([x[1] for x in span_dict.values()]))
 
     if not sentence_role_list:
         sentence_role_list = [{}]
 
-    return sentence_role_list, span_list
+    return sentence_role_list, span
 
 
 def process_roles(
