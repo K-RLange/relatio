@@ -200,7 +200,7 @@ def extract_role_per_sentence(
         if "B-ARGM-NEG" in used_roles:
             role_negation_value = any("B-ARGM-NEG" in tag for tag in tag_list)
             statement_role_dict["B-ARGM-NEG"] = role_negation_value
-            span_dict["B-ARGM-NEG"] = [(x,x) for x in range(len(tag_list)) if tag_kust[x] == "B-ARGM-NEG"]
+            span_dict["B-ARGM-NEG"] = [(x,x) for x in range(len(tag_list)) if tag_list[x] == "B-ARGM-NEG"]
             
 
         key_to_delete = []
