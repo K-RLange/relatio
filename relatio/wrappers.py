@@ -226,7 +226,6 @@ def build_narrative_model(
         with open("%spostproc_roles.json" % output_path, "r") as f:
             postproc_roles = json.load(f)
     else:
-        return roles, spans, sentence_index
         postproc_roles = process_roles(
             roles,
             max_length,
