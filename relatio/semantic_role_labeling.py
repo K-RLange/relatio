@@ -145,12 +145,12 @@ def extract_roles(
 
     statements_role_list: List[Dict[str, Union[str, bool]]] = []
     sentence_index: List[int] = []
+    spans = []
 
     if progress_bar:
         print("Processing SRL...")
         time.sleep(1)
         srl = tqdm(srl)
-    spans = []
     for i, sentence_dict in enumerate(srl):
         role_per_sentence, span = extract_role_per_sentence(sentence_dict, used_roles)
         spans.append(span)
@@ -206,7 +206,7 @@ def extract_role_per_sentence(
         for key in key_to_delete:
             del statement_role_dict[key]
         sentence_role_list.append(statement_role_dict)
-        sentence_role_list.append(span_dict)
+        span_list.append(span_dict)
 
     if not sentence_role_list:
         sentence_role_list = [{}]
