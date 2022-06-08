@@ -18,4 +18,5 @@ python -m nltk.downloader punkt wordnet stopwords averaged_perceptron_tagger
 
 # To Do
 -Filter for statements that do not overlap - choose the maximum of disjunct statements per sentence.
+
 -Combine multiple statements within a sentence and between sentences using "RELATIOn-indicators, such as "and", "therefore", "because",...
