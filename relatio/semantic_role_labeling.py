@@ -217,7 +217,10 @@ def extract_role_per_sentence(
             except KeyError:
                 pass
         sentence_role_list.append(statement_role_dict)
-        span.append((min([x[0] for x in span_dict.values()]), max([x[1] for x in span_dict.values()])))
+        try:
+            span.append((min([x[0] for x in span_dict.values()]), max([x[1] for x in span_dict.values()])))
+        except ValueError:
+            span.append((10000, 0))
 
     if not sentence_role_list:
         sentence_role_list = [{}]
