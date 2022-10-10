@@ -556,3 +556,137 @@ def get_narratives(
         final_statements.to_csv(output_path, index=False)
 
     return final_statements
+
+
+
+
+def a_posteriori_clustering(narrative_model, 
+                            final_statements,
+                            embeddings_type: Optional[str] = None,
+                            embeddings_path: Optional[str] = None,
+                            cluster_labeling: Optional[str] = "most_frequent", 
+                            progress_bar = True):
+    
+    if progress_bar:
+            print("Loading embeddings model...")
+
+    if embeddings_type == "gensim_keyed_vectors":
+        model = SIF_keyed_vectors(path=embeddings_path, sentences=sentences)
+    elif embeddings_type == "gensim_full_model":
+        model = SIF_word2vec(path=embeddings_path, sentences=sentences)
+    elif embeddings_type == "USE":
+        model = USE(path=embeddings_path)
+
+    narrative_model["embeddings_model"] = model
+
+    narrative_model["cluster_model"] = []
+    narrative_model["cluster_labels_most_similar"] = []
+    narrative_model["cluster_labels_most_freq"] = []
+
+        
+    for i, roles in enumerate(narrative_model[roles_with_embeddings]):
+
+            labels_most_similar_list = []
+            kmeans_list = []
+            labels_most_freq_list = []
+
+            vecs = get_vectors(final_statements, narrative_model, used_roles=roles)
+
+            for num in n_clusters[i]:
+
+                if (output_path is not None) and os.path.isfile(
+                    output_path + "kmeans_%s_%s.pk" % (i, num)
+                ):
+                    with open(output_path + "kmeans_%s_%s.pk" % (i, num), "rb") as f:
+                        kmeans = pk.load(f)
+                else:
+                    kmeans = train_cluster_model(
+                        vecs,
+                        model,
+                        n_clusters=num,
+                        verbose=verbose,
+                        random_state=random_state,
+                    )
+
+                if output_path is not None:
+                    with open(output_path + "kmeans_%s_%s.pk" % (i, num), "wb") as f:
+                        pk.dump(kmeans, f)
+
+                clustering_res = get_clusters(
+                    postproc_roles, model, kmeans, used_roles=roles, suffix=""
+                )
+
+                labels_most_freq = label_clusters_most_freq(
+                    clustering_res=clustering_res, postproc_roles=postproc_roles
+                )
+
+                if isinstance(model, (USE)) is False:
+                    labels_most_similar = label_clusters_most_similar(kmeans, model)
+                    labels_most_similar_list.append(labels_most_similar)
+
+                kmeans_list.append(kmeans)
+                labels_most_freq_list.append(labels_most_freq)
+
+            narrative_model["cluster_labels_most_similar"].append(
+                labels_most_similar_list
+            )
+            narrative_model["cluster_model"].append(kmeans_list)
+            narrative_model["cluster_labels_most_freq"].append(labels_most_freq_list)
+
+    if narrative_model["dimension_reduce_verbs"]:
+        cleaned_verbs = clean_verbs(
+            postproc_roles,
+            narrative_model["verb_counts"],
+            progress_bar,
+            suffix="_lowdim",
+        )
+
+        for i, statement in enumerate(cleaned_verbs):
+            for role, value in statement.items():
+                final_statements[i][role] = value
+
+    # Named Entities
+    if narrative_model["roles_with_entities"] is not None:
+        entity_index, postproc_roles = map_entities(
+            statements=final_statements,
+            entities=narrative_model["entities"],
+            used_roles=narrative_model["roles_with_entities"],
+            top_n_entities=narrative_model["top_n_entities"],
+            progress_bar=progress_bar,
+        )
+
+        for role in narrative_model["roles_with_entities"]:
+            for token, indices in entity_index[role].items():
+                for index in indices:
+                    final_statements[index][str(role + "_lowdim")] = token
+
+    # Embeddings
+    if narrative_model["roles_with_embeddings"] is not None:
+
+        for l, roles in enumerate(narrative_model["roles_with_embeddings"]):
+
+            clustering_res = get_clusters(
+                final_statements,
+                narrative_model["embeddings_model"],
+                narrative_model["cluster_model"][l][n_clusters[l]],
+                used_roles=roles,
+                progress_bar=progress_bar,
+                suffix="_lowdim",
+            )
+
+            if cluster_labeling == "most_frequent":
+                for i, statement in enumerate(clustering_res):
+                    for role, cluster in statement.items():
+                        final_statements[i][role] = narrative_model[
+                            "cluster_labels_most_freq"
+                        ][l][n_clusters[l]][cluster]
+
+            if cluster_labeling == "most_similar":
+                for i, statement in enumerate(clustering_res):
+                    for role, cluster in statement.items():
+                        final_statements[i][role] = narrative_model[
+                            "cluster_labels_most_similar"
+                        ][l][n_clusters[l]][cluster]
+    return final_statements  
+
+    
