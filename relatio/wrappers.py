@@ -562,14 +562,12 @@ def get_narratives(
 
 def a_posteriori_clustering(narrative_model, 
                             final_statements,
+                            sentences: List[str],
                             embeddings_type: Optional[str] = None,
                             embeddings_path: Optional[str] = None,
-                            cluster_labeling: Optional[str] = "most_frequent", 
-                            progress_bar = True):
+                            cluster_labeling: Optional[str] = "most_frequent",
+                            random_state = 0):
     
-    if progress_bar:
-            print("Loading embeddings model...")
-
     if embeddings_type == "gensim_keyed_vectors":
         model = SIF_keyed_vectors(path=embeddings_path, sentences=sentences)
     elif embeddings_type == "gensim_full_model":
@@ -583,41 +581,32 @@ def a_posteriori_clustering(narrative_model,
     narrative_model["cluster_labels_most_similar"] = []
     narrative_model["cluster_labels_most_freq"] = []
 
-        
+    #Iterate over all roles in narrative Model
     for i, roles in enumerate(narrative_model[roles_with_embeddings]):
 
             labels_most_similar_list = []
             kmeans_list = []
             labels_most_freq_list = []
 
+            #Get the vectors for our model
             vecs = get_vectors(final_statements, narrative_model, used_roles=roles)
-
+            
+            #If multiple clusters dimensions are wanted, create a model for all of them
             for num in n_clusters[i]:
-
-                if (output_path is not None) and os.path.isfile(
-                    output_path + "kmeans_%s_%s.pk" % (i, num)
-                ):
-                    with open(output_path + "kmeans_%s_%s.pk" % (i, num), "rb") as f:
-                        kmeans = pk.load(f)
-                else:
-                    kmeans = train_cluster_model(
-                        vecs,
-                        model,
-                        n_clusters=num,
-                        verbose=verbose,
-                        random_state=random_state,
-                    )
-
-                if output_path is not None:
-                    with open(output_path + "kmeans_%s_%s.pk" % (i, num), "wb") as f:
-                        pk.dump(kmeans, f)
+                kmeans = train_cluster_model(
+                    vecs,
+                    model,
+                    n_clusters=num,
+                    verbose=False,
+                    random_state=random_state,
+                )
 
                 clustering_res = get_clusters(
-                    postproc_roles, model, kmeans, used_roles=roles, suffix=""
+                    final_statements, model, kmeans, used_roles=roles, suffix=""
                 )
 
                 labels_most_freq = label_clusters_most_freq(
-                    clustering_res=clustering_res, postproc_roles=postproc_roles
+                    clustering_res=clustering_res, postproc_roles=final_statements
                 )
 
                 if isinstance(model, (USE)) is False:
@@ -635,7 +624,7 @@ def a_posteriori_clustering(narrative_model,
 
     if narrative_model["dimension_reduce_verbs"]:
         cleaned_verbs = clean_verbs(
-            postproc_roles,
+            final_statements,
             narrative_model["verb_counts"],
             progress_bar,
             suffix="_lowdim",
@@ -647,12 +636,11 @@ def a_posteriori_clustering(narrative_model,
 
     # Named Entities
     if narrative_model["roles_with_entities"] is not None:
-        entity_index, postproc_roles = map_entities(
+        entity_index, final_statements = map_entities(
             statements=final_statements,
             entities=narrative_model["entities"],
             used_roles=narrative_model["roles_with_entities"],
-            top_n_entities=narrative_model["top_n_entities"],
-            progress_bar=progress_bar,
+            top_n_entities=narrative_model["top_n_entities"]
         )
 
         for role in narrative_model["roles_with_entities"]:
@@ -670,7 +658,6 @@ def a_posteriori_clustering(narrative_model,
                 narrative_model["embeddings_model"],
                 narrative_model["cluster_model"][l][n_clusters[l]],
                 used_roles=roles,
-                progress_bar=progress_bar,
                 suffix="_lowdim",
             )
 
