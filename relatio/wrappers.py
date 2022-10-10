@@ -580,7 +580,7 @@ def a_posteriori_clustering(narrative_model,
     narrative_model["cluster_model"] = []
     narrative_model["cluster_labels_most_similar"] = []
     narrative_model["cluster_labels_most_freq"] = []
-    print(narrative_model.keys())
+    print(narrative_model)
     #Iterate over all roles in narrative Model
     for i, roles in enumerate(narrative_model["roles_with_embeddings"]):
 
