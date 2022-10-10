@@ -566,14 +566,15 @@ def a_posteriori_clustering(narrative_model,
                             embeddings_type: Optional[str] = None,
                             embeddings_path: Optional[str] = None,
                             cluster_labeling: Optional[str] = "most_frequent",
+                            n_clusters = [0],
                             random_state = 0):
     
-    if embeddings_type == "gensim_keyed_vectors":
-        model = SIF_keyed_vectors(path=embeddings_path, sentences=sentences)
-    elif embeddings_type == "gensim_full_model":
-        model = SIF_word2vec(path=embeddings_path, sentences=sentences)
-    elif embeddings_type == "USE":
-        model = USE(path=embeddings_path)
+    #if embeddings_type == "gensim_keyed_vectors":
+    #    model = SIF_keyed_vectors(path=embeddings_path, sentences=sentences)
+    #elif embeddings_type == "gensim_full_model":
+    #    model = SIF_word2vec(path=embeddings_path, sentences=sentences)
+    #elif embeddings_type == "USE":
+    #    model = USE(path=embeddings_path)
 
     narrative_model["embeddings_model"] = model
 
@@ -598,7 +599,7 @@ def a_posteriori_clustering(narrative_model,
                     model,
                     n_clusters=num,
                     verbose=False,
-                    random_state=random_state,
+                    random_state=random_state
                 )
 
                 clustering_res = get_clusters(
@@ -609,8 +610,8 @@ def a_posteriori_clustering(narrative_model,
                     clustering_res=clustering_res, postproc_roles=final_statements
                 )
 
-                if isinstance(model, (USE)) is False:
-                    labels_most_similar = label_clusters_most_similar(kmeans, model)
+                if isinstance(narrative_model, (USE)) is False:
+                    labels_most_similar = label_clusters_most_similar(kmeans, narrative_model)
                     labels_most_similar_list.append(labels_most_similar)
 
                 kmeans_list.append(kmeans)
@@ -626,7 +627,7 @@ def a_posteriori_clustering(narrative_model,
         cleaned_verbs = clean_verbs(
             final_statements,
             narrative_model["verb_counts"],
-            progress_bar,
+            False,
             suffix="_lowdim",
         )
 
