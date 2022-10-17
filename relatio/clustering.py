@@ -205,6 +205,7 @@ def get_vectors(
         vec = get_vector(role, model)
         if vec is not None:
             vecs.append(vec)
+    print(vecs)
 
     vecs = np.concatenate(vecs)
 
