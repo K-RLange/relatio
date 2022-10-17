@@ -569,12 +569,12 @@ def a_posteriori_clustering(narrative_model,
                             n_clusters = [0],
                             random_state = 0):
     
-    #if embeddings_type == "gensim_keyed_vectors":
-    #    model = SIF_keyed_vectors(path=embeddings_path, sentences=sentences)
-    #elif embeddings_type == "gensim_full_model":
-    #    model = SIF_word2vec(path=embeddings_path, sentences=sentences)
-    #elif embeddings_type == "USE":
-    #    model = USE(path=embeddings_path)
+    if embeddings_type == "gensim_keyed_vectors":
+        model = SIF_keyed_vectors(path=embeddings_path, sentences=sentences)
+    elif embeddings_type == "gensim_full_model":
+        model = SIF_word2vec(path=embeddings_path, sentences=sentences)
+    elif embeddings_type == "USE":
+        model = USE(path=embeddings_path)
 
     narrative_model["embeddings_model"] = model
 
