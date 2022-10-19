@@ -610,7 +610,7 @@ def a_posteriori_clustering(narrative_model,
                 )
 
                 if isinstance(narrative_model, (USE)) is False:
-                    labels_most_similar = label_clusters_most_similar(kmeans, narrative_model)
+                    labels_most_similar = label_clusters_most_similar(kmeans, model)
                     labels_most_similar_list.append(labels_most_similar)
 
                 kmeans_list.append(kmeans)
