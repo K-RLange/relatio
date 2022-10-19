@@ -589,7 +589,7 @@ def a_posteriori_clustering(narrative_model,
             labels_most_freq_list = []
 
             #Get the vectors for our model
-            vecs = get_vectors(final_statements, narrative_model, used_roles=roles)
+            vecs = get_vectors(final_statements, model, used_roles=roles)
             
             #If multiple clusters dimensions are wanted, create a model for all of them
             for num in n_clusters[i]:
