@@ -566,7 +566,7 @@ def a_posteriori_clustering(narrative_model,
                             embeddings_type: Optional[str] = None,
                             embeddings_path: Optional[str] = None,
                             cluster_labeling: Optional[str] = "most_frequent",
-                            n_clusters = [0],
+                            n_clusters = [[0]],
                             random_state = 0):
     
     if embeddings_type == "gensim_keyed_vectors":
