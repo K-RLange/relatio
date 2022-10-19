@@ -242,6 +242,7 @@ def build_narrative_model(
             remove_n_letter_words,
             progress_bar=progress_bar,
         )
+        print(postproc_roles)
 
     if output_path is not None:
         with open("%spostproc_roles.json" % output_path, "w") as f:
@@ -516,7 +517,6 @@ def get_narratives(
                         ][l][n_clusters[l]][cluster]
 
     # Original sentence and document
-    print("test")
     for i, index in enumerate(sentence_index):
         final_statements[i]["sentence"] = index
         final_statements[i]["doc"] = doc_index[index]
@@ -581,7 +581,6 @@ def a_posteriori_clustering(narrative_model,
     narrative_model["cluster_model"] = []
     narrative_model["cluster_labels_most_similar"] = []
     narrative_model["cluster_labels_most_freq"] = []
-    print(narrative_model)
     #Iterate over all roles in narrative Model
     for i, roles in enumerate(narrative_model["roles_with_embeddings"]):
 
