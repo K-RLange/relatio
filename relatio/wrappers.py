@@ -567,14 +567,14 @@ def a_posteriori_clustering(narrative_model,
                             embeddings_path: Optional[str] = None,
                             cluster_labeling: Optional[str] = "most_frequent",
                             n_clusters = [[0]],
-                            random_state = 0):
-    
-    if embeddings_type == "gensim_keyed_vectors":
-        model = SIF_keyed_vectors(path=embeddings_path, sentences=sentences)
-    elif embeddings_type == "gensim_full_model":
-        model = SIF_word2vec(path=embeddings_path, sentences=sentences)
-    elif embeddings_type == "USE":
-        model = USE(path=embeddings_path)
+                            random_state = 0, model=None):
+    if not model:
+        if embeddings_type == "gensim_keyed_vectors":
+            model = SIF_keyed_vectors(path=embeddings_path, sentences=sentences)
+        elif embeddings_type == "gensim_full_model":
+            model = SIF_word2vec(path=embeddings_path, sentences=sentences)
+        elif embeddings_type == "USE":
+            model = USE(path=embeddings_path)
 
     narrative_model["embeddings_model"] = model
 
@@ -653,27 +653,19 @@ def a_posteriori_clustering(narrative_model,
 
         for l, roles in enumerate(narrative_model["roles_with_embeddings"]):
 
-            clustering_res = get_clusters(
-                final_statements,
-                narrative_model["embeddings_model"],
-                narrative_model["cluster_model"][l][n_clusters[l]],
-                used_roles=roles,
-                suffix="_lowdim",
-            )
-
             if cluster_labeling == "most_frequent":
                 for i, statement in enumerate(clustering_res):
                     for role, cluster in statement.items():
                         final_statements[i][role] = narrative_model[
                             "cluster_labels_most_freq"
-                        ][l][n_clusters[l]][cluster]
+                        ][l][0][clustering_res[i][role]]
 
             if cluster_labeling == "most_similar":
                 for i, statement in enumerate(clustering_res):
                     for role, cluster in statement.items():
                         final_statements[i][role] = narrative_model[
                             "cluster_labels_most_similar"
-                        ][l][n_clusters[l]][cluster]
+                        ][l][0][clustering_res[i][role]]
     return final_statements  
 
     
