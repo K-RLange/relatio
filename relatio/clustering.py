@@ -161,10 +161,14 @@ def get_vector(tokens: List[str], model: Union[USE, SIF_word2vec, SIF_keyed_vect
         #    res = None
         else:
             tokens = [token for token in tokens if token in model._sif_dict and token in model._vocab]
-            res = model(tokens)
-            res = np.array(
-                [res]
-            )  # correct format to feed the vectors to sklearn clustering methods
+            
+            if not tokens:
+                res = None
+            else:
+                res = model(tokens)
+                res = np.array(
+                    [res]
+                )  # correct format to feed the vectors to sklearn clustering methods
     else:
         res = model(tokens)
         res = np.array(
