@@ -16,6 +16,7 @@ from typing import List, Optional
 
 import numpy as np
 import pandas as pd
+from sklearn.cluster import KMeans
 
 from .clustering import (
     USE,
@@ -593,13 +594,16 @@ def a_posteriori_clustering(narrative_model,
             
             #If multiple clusters dimensions are wanted, create a model for all of them
             for num in n_clusters[i]:
-                kmeans = train_cluster_model(
-                    vecs,
-                    model,
-                    n_clusters=num,
-                    verbose=False,
-                    random_state=random_state
-                )
+                kmeans = KMeans(
+                    n_clusters=num, random_state=random_state, verbose=False, n_init=50,
+                    max_iter=500).fit(vecs)
+                #kmeans = train_cluster_model(
+                #    vecs,
+                #    model,
+                #    n_clusters=num,
+                #    verbose=False,
+                #    random_state=random_state
+                #)
 
                 clustering_res = get_clusters(
                     final_statements, model, kmeans, used_roles=roles, suffix=""
