@@ -656,14 +656,14 @@ def a_posteriori_clustering(narrative_model,
             if cluster_labeling == "most_frequent":
                 for i, statement in enumerate(clustering_res):
                     for role, cluster in statement.items():
-                        final_statements[i][role] = narrative_model[
+                        final_statements[i][role + "_lowdim"] = narrative_model[
                             "cluster_labels_most_freq"
                         ][l][0][clustering_res[i][role]]
 
-            if cluster_labeling == "most_similar":
+            elif cluster_labeling == "most_similar":
                 for i, statement in enumerate(clustering_res):
                     for role, cluster in statement.items():
-                        final_statements[i][role] = narrative_model[
+                        final_statements[i][role + "_lowdim"] = narrative_model[
                             "cluster_labels_most_similar"
                         ][l][0][clustering_res[i][role]]
     return final_statements  
