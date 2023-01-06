@@ -641,7 +641,7 @@ def a_posteriori_clustering(narrative_model,
 
     # Named Entities
     if roles_with_embeddings is not None:
-        entity_index, final_statements = map_entities(
+        entity_index, _ = map_entities(
             statements=final_statements,
             entities=narrative_model["entities"],
             used_roles=roles_with_embeddings,
