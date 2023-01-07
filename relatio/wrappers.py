@@ -638,20 +638,6 @@ def a_posteriori_clustering(narrative_model,
             for role, value in statement.items():
                 final_statements[i][role] = value
 
-    # Named Entities
-    if narrative_model["roles_with_entities"] is not None:
-        entity_index, final_statements = map_entities(
-            statements=final_statements,
-            entities=narrative_model["entities"],
-            used_roles=narrative_model["roles_with_entities"],
-            top_n_entities=narrative_model["top_n_entities"]
-        )
-
-        for role in narrative_model["roles_with_entities"]:
-            for token, indices in entity_index[role].items():
-                for index in indices:
-                    final_statements[index][str(role + "_lowdim")] = token
-
     # Embeddings
     if narrative_model["roles_with_embeddings"] is not None:
 
@@ -670,6 +656,21 @@ def a_posteriori_clustering(narrative_model,
                         final_statements[i][role + "_lowdim"] = narrative_model[
                             "cluster_labels_most_similar"
                         ][l][0][clustering_res[i][role]]
+
+
+        # Named Entities
+        entity_index, _ = map_entities(
+            statements=final_statements,
+            entities=narrative_model["entities"],
+            used_roles=narrative_model["roles_with_entities"],
+            top_n_entities=narrative_model["top_n_entities"]
+        )
+
+        for role in narrative_model["roles_with_entities"]:
+            for token, indices in entity_index[role].items():
+                for index in indices:
+                    final_statements[index][str(role + "_lowdim")] = token
+
     return final_statements  
 
     
