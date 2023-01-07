@@ -568,8 +568,7 @@ def a_posteriori_clustering(narrative_model,
                             embeddings_path: Optional[str] = None,
                             cluster_labeling: Optional[str] = "most_frequent",
                             n_clusters = [[0]],
-                            random_state = 0, model=None,
-                            roles_with_embeddings=["ARG0_highdim", "ARG1_highdim", "ARG2_highdim"]):
+                            random_state = 0, model=None):
     if not model:
         if embeddings_type == "gensim_keyed_vectors":
             model = SIF_keyed_vectors(path=embeddings_path, sentences=sentences)
@@ -584,7 +583,7 @@ def a_posteriori_clustering(narrative_model,
     narrative_model["cluster_labels_most_similar"] = []
     narrative_model["cluster_labels_most_freq"] = []
     #Iterate over all roles in narrative Model
-    for i, roles in enumerate(roles_with_embeddings):
+    for i, roles in enumerate(narrative_model["roles_with_embeddings"]):
 
             labels_most_similar_list = []
             kmeans_list = []
@@ -640,35 +639,35 @@ def a_posteriori_clustering(narrative_model,
                 final_statements[i][role] = value
 
     # Named Entities
-    if roles_with_embeddings is not None:
+    if narrative_model["roles_with_entities"] is not None:
         entity_index, final_statements = map_entities(
             statements=final_statements,
             entities=narrative_model["entities"],
-            used_roles=roles_with_embeddings,
+            used_roles=narrative_model["roles_with_entities"],
             top_n_entities=narrative_model["top_n_entities"]
         )
 
-        for role in roles_with_embeddings:
+        for role in narrative_model["roles_with_entities"]:
             for token, indices in entity_index[role].items():
                 for index in indices:
                     final_statements[index][str(role + "_lowdim")] = token
 
     # Embeddings
-    if roles_with_embeddings is not None:
+    if narrative_model["roles_with_embeddings"] is not None:
 
-        for l, roles in enumerate(roles_with_embeddings):
+        for l, roles in enumerate(narrative_model["roles_with_embeddings"]):
 
             if cluster_labeling == "most_frequent":
                 for i, statement in enumerate(clustering_res):
                     for role, cluster in statement.items():
-                        final_statements[i][role[0:4] + "_lowdim"] = narrative_model[
+                        final_statements[i][role + "_lowdim"] = narrative_model[
                             "cluster_labels_most_freq"
                         ][l][0][clustering_res[i][role]]
 
             elif cluster_labeling == "most_similar":
                 for i, statement in enumerate(clustering_res):
                     for role, cluster in statement.items():
-                        final_statements[i][role[0:4] + "_lowdim"] = narrative_model[
+                        final_statements[i][role + "_lowdim"] = narrative_model[
                             "cluster_labels_most_similar"
                         ][l][0][clustering_res[i][role]]
     return final_statements  
